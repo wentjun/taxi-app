@@ -34,13 +34,48 @@ class Map extends React.Component<Props, State> {
       style: 'mapbox://styles/mapbox/streets-v9',
       zoom
     });
-
+    // Add zoom and rotation controls to the map.
+    this.map.addControl(new mapboxgl.NavigationControl());
     this.map.on('move', () => {
       const { lat, lng } = this.map.getCenter();
       this.setState({
         lat: Number(lat.toFixed(4)),
         lng: Number(lng.toFixed(4)),
         zoom: Number(this.map.getZoom().toFixed(2))
+      });
+    });
+    this.map.on('load', () => {
+      /* Image: An image is loaded and added to the map. */
+      this.map.loadImage('https://i.imgur.com/MK4NUzI.png', (error: any, image: any) => {
+        if (error) {
+          throw error;
+        }
+        this.map.addImage('custom-marker', image);
+        /* Style layer: A style layer ties together the source and image and specifies how they are displayed on the map. */
+        this.map.addLayer({
+          id: 'markers',
+          type: 'symbol',
+          /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
+          source: {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: [
+                {
+                  type: 'Feature',
+                  properties: {},
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [-0.0964509, 51.5049375]
+                  }
+                }
+              ]
+            }
+          },
+          layout: {
+            'icon-image': 'custom-marker'
+          }
+        });
       });
     });
   }
