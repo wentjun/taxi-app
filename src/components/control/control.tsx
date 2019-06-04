@@ -1,5 +1,5 @@
 import { from, Subject } from 'rxjs';
-import { debounceTime, mergeMap } from 'rxjs/operators';
+import { debounceTime, map, mergeMap, takeUntil } from 'rxjs/operators';
 import React, { CSSProperties } from 'react';
 
 interface Props {
@@ -10,8 +10,25 @@ interface State {
   value: string;
 }
 
+interface TaxiResponse {
+  drivers: Driver[];
+  pickupEta: number;
+}
+
+interface Driver {
+  driverId: string;
+  location: Location;
+}
+
+interface Location {
+  bearing: number;
+  latitude: number;
+  longitude: number;
+}
+
 class Control extends React.Component<Props, State> {
   private rangeSliderSubject: Subject<string>;
+  private unsubscribe: Subject<void> = new Subject();
 
   constructor(props: Props) {
     super(props);
@@ -30,13 +47,15 @@ class Control extends React.Component<Props, State> {
   }
 
   public componentWillUnmount() {
-
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 
   debounceInputSelection() {
     this.rangeSliderSubject
       .pipe(
-        debounceTime(1000)
+        debounceTime(1000),
+        takeUntil(this.unsubscribe)
       ).subscribe((debouncedInputvalue: string) => {
         this.fetchTaxiList();
       });
@@ -52,7 +71,15 @@ class Control extends React.Component<Props, State> {
     const fetchTaxiListRequest = fetch(`https://qa-interview-test.qa.splytech.io/api/drivers?latitude=51.5049375&longitude=-0.0964509&count=${this.state.value}`);
     from(fetchTaxiListRequest)
       .pipe(
-        mergeMap(response => response.json())
+        mergeMap(response => response.json()),
+        map(response => ({
+            pickupEta: response.pickup_eta,
+            drivers: response.drivers.map((driver: any) => ({
+              driverId: driver.driver_id,
+              location: driver.location
+            }))
+          })),
+        takeUntil(this.unsubscribe)
       ).subscribe(res => {
         console.log(res);
       }, error => {
