@@ -1,12 +1,19 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 
 import logo from './logo.svg';
+import Control from './components/control/control';
 import Map from './components/map/map';
 import './App.css';
 
 const App: React.FC = () => {
+  const style: CSSProperties = {
+    display: 'flex',
+    flexFlow: 'row wrap'
+    // width: '100vw'
+  };
   return (
-    <div>
+    <div style={style}>
+      <Control />
       <Map />
     </div>
   );

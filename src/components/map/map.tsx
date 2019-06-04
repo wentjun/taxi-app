@@ -85,14 +85,17 @@ class Map extends React.Component<Props, State> {
   }
 
   public render() {
+    const wrapperStyle: CSSProperties = {
+      width: '75vw'
+    };
     const style: CSSProperties = {
       bottom: 0,
       position: 'absolute',
       top: 0,
-      width: '100%'
+      width: 'inherit'
     };
     return(
-      <div>
+      <div style={wrapperStyle}>
         <div ref={el => this.mapContainer = el} style={style} />
       </div>
     );
