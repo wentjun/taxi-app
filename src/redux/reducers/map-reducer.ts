@@ -1,6 +1,7 @@
 import { ActionType, getType } from 'typesafe-actions';
 
 import * as actions from '../actions';
+import { TaxiResponse } from '../../shared/models/taxi-response';
 
 type Action = ActionType<typeof actions>;
 
@@ -9,6 +10,7 @@ export interface MapState {
   readonly latitude: number;
   readonly longtitude: number;
   readonly zoom: number;
+  readonly taxiLocations?: TaxiResponse;
 }
 
 const initialState = {
@@ -27,6 +29,12 @@ export const mapReducer = (state: MapState = initialState, action: Action): MapS
         ...state,
         ready: true
       };
+
+    case getType(actions.updateTaxiLocations):
+      return {
+        ...state,
+        taxiLocations: action.payload
+      }
 
     default:
       return state;

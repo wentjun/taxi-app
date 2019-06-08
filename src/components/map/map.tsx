@@ -1,11 +1,14 @@
 import React, { CSSProperties } from 'react';
 import mapboxgl from 'mapbox-gl';
 
+import { TaxiResponse } from '../../shared/models/taxi-response';
+
 export interface MapProps {
   mapReady: () => void;
   longitude: number;
   latitude: number;
   zoom: number;
+  taxiLocations?: TaxiResponse;
 }
 
 interface MapState {
@@ -22,7 +25,6 @@ class Map extends React.Component<MapProps, MapState> {
 
   constructor(props: MapProps) {
     super(props);
-    this.onLoaded = this.onLoaded.bind(this);
   }
 
   public componentDidMount() {
@@ -80,6 +82,10 @@ class Map extends React.Component<MapProps, MapState> {
     });
   }
 
+  public componentDidUpdate() {
+    console.log(this.props);
+  }
+
   public componentWillUnmount() {
     this.map.remove();
   }
@@ -99,10 +105,6 @@ class Map extends React.Component<MapProps, MapState> {
         <div ref={el => this.mapContainer = el} style={style} />
       </div>
     );
-  }
-
-  private onLoaded() {
-
   }
 }
 

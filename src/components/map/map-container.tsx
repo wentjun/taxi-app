@@ -8,7 +8,6 @@ import Map from './map';
 
 type Action = ActionType<typeof actions>;
 
-
 interface OwnProps {
 }
 
@@ -16,7 +15,8 @@ const mapStateToProps = (state: RootState) => ({
   loading: !state.map.ready,
   latitude: state.map.latitude,
   longitude: state.map.longtitude,
-  zoom: state.map.zoom
+  zoom: state.map.zoom,
+  taxiLocations: state.map.taxiLocations
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>, props: OwnProps) => bindActionCreators({

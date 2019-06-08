@@ -10,7 +10,7 @@ import App from './components/App';
 import * as serviceWorker from './serviceWorker';
 import * as actions from './redux/actions/index';
 import reducers, { RootState } from './redux/reducers/index';
-import epics from './redux/epics/index';
+import epics from './redux/effects/index';
 
 type Action = ActionType<typeof actions>;
 
