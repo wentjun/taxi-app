@@ -1,13 +1,14 @@
-import { from, Subject } from 'rxjs';
-import { debounceTime, map, mergeMap, takeUntil } from 'rxjs/operators';
 import React, { CSSProperties } from 'react';
+import { debounceTime, map, mergeMap, takeUntil } from 'rxjs/operators';
+import { from, Subject } from 'rxjs';
 
-interface Props {
-
+interface ControlProps {
+  setTaxiCount: (taxiCount: string) => {};
+  mapReady: () => void;
+  taxiCount: string;
 }
 
-interface State {
-  value: string;
+interface ControlState {
 }
 
 interface TaxiResponse {
@@ -26,15 +27,12 @@ interface Location {
   longitude: number;
 }
 
-class Control extends React.Component<Props, State> {
+class Control extends React.Component<ControlProps, ControlState> {
   private rangeSliderSubject: Subject<string>;
   private unsubscribe: Subject<void> = new Subject();
 
-  constructor(props: Props) {
+  constructor(props: ControlProps) {
     super(props);
-    this.state = {
-      value: '5'
-    };
     // bind context of 'this' to event handler
     this.handleInputChange = this.handleInputChange.bind(this);
     // Subject to handle the debouncing of input values
@@ -42,7 +40,8 @@ class Control extends React.Component<Props, State> {
   }
 
   public componentDidMount() {
-    this.fetchTaxiList();
+    // this.fetchTaxiList();
+    this.loadInitialControlState();
     this.debounceInputSelection();
   }
 
@@ -51,24 +50,32 @@ class Control extends React.Component<Props, State> {
     this.unsubscribe.complete();
   }
 
+  loadInitialControlState() {
+    console.log(this.props.taxiCount)
+  }
+
   debounceInputSelection() {
     this.rangeSliderSubject
       .pipe(
         debounceTime(1000),
         takeUntil(this.unsubscribe)
       ).subscribe((debouncedInputvalue: string) => {
-        this.fetchTaxiList();
+        // this.fetchTaxiList();
+        console.log(debouncedInputvalue);
+        this.props.setTaxiCount(debouncedInputvalue);
       });
   }
 
   handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     const taxiAmount: string = event.target.value;
-    this.setState({value: taxiAmount});
+    // this.setState({value: taxiAmount});
     this.rangeSliderSubject.next(taxiAmount);
+    // this.props.getTaxiList(event.target.value);
   }
 
   fetchTaxiList() {
-    const fetchTaxiListRequest = fetch(`https://qa-interview-test.qa.splytech.io/api/drivers?latitude=51.5049375&longitude=-0.0964509&count=${this.state.value}`);
+    /*
+    const fetchTaxiListRequest = fetch(`https://qa-interview-test.qa.splytech.io/api/drivers?latitude=51.5049375&longitude=-0.0964509&count=${this.props.setTaxiCount}`);
     from(fetchTaxiListRequest)
       .pipe(
         mergeMap(response => response.json()),
@@ -86,6 +93,7 @@ class Control extends React.Component<Props, State> {
         // handle network errors
         console.log(error);
       });
+      */
   }
 
   public render() {
@@ -106,7 +114,7 @@ class Control extends React.Component<Props, State> {
           type="range"
           min="1"
           max="50"
-          value={this.state.value}
+          value={this.props.taxiCount}
           onChange={this.handleInputChange}
           step="1"
         />
@@ -115,7 +123,7 @@ class Control extends React.Component<Props, State> {
           type="number"
           min="1"
           max="50"
-          value={this.state.value}
+          value={this.props.taxiCount}
           onChange={this.handleInputChange}
         />
       </div>
