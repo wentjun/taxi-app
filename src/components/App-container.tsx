@@ -12,7 +12,7 @@ interface OwnProps {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  loading: !state.map.ready,
+  loading: !state.map.ready
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>, props: OwnProps) => ({

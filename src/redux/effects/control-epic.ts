@@ -1,11 +1,12 @@
 import { Epic } from 'redux-observable';
 import { of } from 'rxjs';
-import { switchMap, filter, map, catchError, debounceTime } from 'rxjs/operators';
+import { switchMap, filter, catchError, debounceTime, mergeMap } from 'rxjs/operators';
 import { ActionType, isActionOf } from 'typesafe-actions';
 
 import * as actions from '../actions';
-import { RootState } from '../reducers';
 import { getTaxiList } from '../../shared/services/taxi-service';
+import { RootState } from '../reducers';
+import { TaxiResponse } from '../../shared/models/taxi-response';
 type Action = ActionType<typeof actions>;
 
 const mapReadyEpic: Epic<Action, Action, RootState> = (action$, store) =>
@@ -13,9 +14,8 @@ const mapReadyEpic: Epic<Action, Action, RootState> = (action$, store) =>
     filter(isActionOf(actions.mapReady)),
     switchMap(() =>
       getTaxiList(store.value.control.taxiCount).pipe(
-        map(actions.updateTaxiLocations)
-      )
-    )
+        mergeMap((response: TaxiResponse) => ([actions.updateTaxiLocations(response), actions.getTaxiEta(response.pickupEta)]))
+    ))
   );
 
 const getTaxiListEpic: Epic<Action, Action, RootState> = (action$, store) =>
@@ -24,7 +24,7 @@ const getTaxiListEpic: Epic<Action, Action, RootState> = (action$, store) =>
     debounceTime(500),
     switchMap(action =>
       getTaxiList(action.payload.taxiCount).pipe(
-        map(actions.updateTaxiLocations)
+        mergeMap((response: TaxiResponse) => ([actions.updateTaxiLocations(response), actions.getTaxiEta(response.pickupEta)]))
       )
     )
   );

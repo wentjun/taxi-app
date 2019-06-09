@@ -1,5 +1,6 @@
 import mapboxgl from 'mapbox-gl';
-import React, { CSSProperties } from 'react';
+import React from 'react';
+import styled from 'styled-components';
 
 import { TaxiResponse } from '../../shared/models/taxi-response';
 import { Symbols } from './symbols';
@@ -14,6 +15,22 @@ export interface MapProps {
 
 interface MapState {
 }
+
+const MapWrapper = styled.div`
+  width: 75vw;
+  @media all and (max-width: 1024px) {
+    width: 100vw;
+    height: 75vh;
+  }
+`;
+
+const MapContainer = styled.div`
+  bottom: 0;
+  position: absolute;
+  top: 0;
+  width: inherit;
+  height: inherit;
+`;
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoid2VudGp1biIsImEiOiJjandmODc5cngwcDJjNDNwYjhtOXZqejVtIn0.1l6XNJgy4pkY7TWEV58pVQ';
 
@@ -139,19 +156,10 @@ class Map extends React.Component<MapProps, MapState> {
   }
 
   public render() {
-    const wrapperStyle: CSSProperties = {
-      width: '75vw'
-    };
-    const style: CSSProperties = {
-      bottom: 0,
-      position: 'absolute',
-      top: 0,
-      width: 'inherit'
-    };
     return(
-      <div style={wrapperStyle}>
-        <div ref={el => this.mapContainer = el} style={style} />
-      </div>
+      <MapWrapper>
+        <MapContainer ref={el => this.mapContainer = el} />
+      </MapWrapper>
     );
   }
 }
