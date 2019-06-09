@@ -1,7 +1,8 @@
-import React, { CSSProperties } from 'react';
 import mapboxgl from 'mapbox-gl';
+import React, { CSSProperties } from 'react';
 
 import { TaxiResponse } from '../../shared/models/taxi-response';
+import { Symbols } from './symbols';
 
 export interface MapProps {
   mapReady: () => void;
@@ -12,9 +13,6 @@ export interface MapProps {
 }
 
 interface MapState {
-  lat: number;
-  lng: number;
-  zoom: number;
 }
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoid2VudGp1biIsImEiOiJjandmODc5cngwcDJjNDNwYjhtOXZqejVtIn0.1l6XNJgy4pkY7TWEV58pVQ';
@@ -28,7 +26,18 @@ class Map extends React.Component<MapProps, MapState> {
   }
 
   public componentDidMount() {
-    this.props.mapReady();
+    this.loadMap();
+  }
+
+  public componentDidUpdate() {
+    this.updateTaxiLocations();
+  }
+
+  public componentWillUnmount() {
+    this.map.remove();
+  }
+
+  loadMap() {
     const { longitude, latitude, zoom } = this.props;
     this.map = new mapboxgl.Map({
       center: [longitude, latitude],
@@ -36,58 +45,97 @@ class Map extends React.Component<MapProps, MapState> {
       style: 'mapbox://styles/mapbox/streets-v9',
       zoom
     });
+
     // Add zoom and rotation controls to the map.
     this.map.addControl(new mapboxgl.NavigationControl());
-    this.map.on('move', () => {
-      const { lat, lng } = this.map.getCenter();
-      this.setState({
-        lat: Number(lat.toFixed(4)),
-        lng: Number(lng.toFixed(4)),
-        zoom: Number(this.map.getZoom().toFixed(2))
-      });
-    });
+
     this.map.on('load', () => {
-      /* Image: An image is loaded and added to the map. */
-      this.map.loadImage('https://i.imgur.com/MK4NUzI.png', (error: any, image: any) => {
+      this.props.mapReady();
+      this.loadCurrentPositionMarker();
+      this.loadTaxiMarkersLayer();
+    });
+  }
+
+  loadCurrentPositionMarker() {
+    const { longitude, latitude } = this.props;
+    this.map.loadImage(Symbols.currentPositionMarker, (error: any, image: HTMLElement) => {
         if (error) {
           throw error;
         }
-        this.map.addImage('custom-marker', image);
-        /* Style layer: A style layer ties together the source and image and specifies how they are displayed on the map. */
+        this.map.addImage('currentPositionMarker', image);
         this.map.addLayer({
-          id: 'markers',
+          id: 'currentLocationLayer',
           type: 'symbol',
-          /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
+          layout: {
+            'icon-image': 'currentPositionMarker',
+            'icon-size': 0.4
+          },
           source: {
             type: 'geojson',
             data: {
               type: 'FeatureCollection',
-              features: [
-                {
-                  type: 'Feature',
-                  properties: {},
-                  geometry: {
-                    type: 'Point',
-                    coordinates: [-0.0964509, 51.5049375]
-                  }
+              features: [{
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [longitude, latitude]
                 }
-              ]
+              }]
             }
-          },
-          layout: {
-            'icon-image': 'custom-marker'
           }
         });
       });
-    });
   }
 
-  public componentDidUpdate() {
-    console.log(this.props);
+  loadTaxiMarkersLayer() {
+    this.map.loadImage(Symbols.taxiMarker, (error: any, image: HTMLElement) => {
+        if (error) {
+          throw error;
+        }
+        this.map.addImage('taxiMarker', image);
+
+        this.map.addSource('taxiSource', {
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features: []
+          }
+        });
+        this.map.addLayer({
+          id: 'taxiLayer',
+          type: 'symbol',
+          layout: {
+            'icon-image': 'taxiMarker',
+            'icon-size': 0.5
+          },
+          source: 'taxiSource'
+        });
+      });
   }
 
-  public componentWillUnmount() {
-    this.map.remove();
+  updateTaxiLocations() {
+    const getTaxiSource = this.map.getSource('taxiSource');
+    const { taxiLocations } = this.props;
+
+    if (taxiLocations && getTaxiSource) {
+      // map to response to geojson object
+      const res = taxiLocations.drivers.map(driver => {
+        const { longitude, latitude, bearing } = driver.location;
+        return {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [longitude, latitude]
+          }
+        }
+      });
+      const updatedGeoJson = {
+        type: 'FeatureCollection',
+        features: res
+      };
+      // update taxi layer with updated geojson object
+      getTaxiSource.setData(updatedGeoJson);
+    }
   }
 
   public render() {

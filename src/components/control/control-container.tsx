@@ -17,7 +17,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>, props: OwnProps) => bindActionCreators({
   setTaxiCount: (taxiCount: string) => actions.setTaxiCount(taxiCount),
-  mapReady: () => actions.mapReadyAction()
+  mapReady: () => actions.mapReady()
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Control);

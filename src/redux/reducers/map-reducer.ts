@@ -17,14 +17,14 @@ const initialState = {
   ready: false,
   latitude: 51.5049375,
   longtitude: -0.0964509,
-  zoom: 15
+  zoom: 13
 };
 
 export const mapReducer = (state: MapState = initialState, action: Action): MapState => {
 
   switch (action.type) {
 
-    case getType(actions.mapReadyAction):
+    case getType(actions.mapReady):
       return {
         ...state,
         ready: true
@@ -34,7 +34,7 @@ export const mapReducer = (state: MapState = initialState, action: Action): MapS
       return {
         ...state,
         taxiLocations: action.payload
-      }
+      };
 
     default:
       return state;
