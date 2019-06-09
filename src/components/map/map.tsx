@@ -29,6 +29,14 @@ class Map extends React.Component<MapProps, MapState> {
     this.loadMap();
   }
 
+  public componentDidUpdate() {
+    this.updateTaxiLocations();
+  }
+
+  public componentWillUnmount() {
+    this.map.remove();
+  }
+
   loadMap() {
     const { longitude, latitude, zoom } = this.props;
     this.map = new mapboxgl.Map({
@@ -44,6 +52,7 @@ class Map extends React.Component<MapProps, MapState> {
     this.map.on('load', () => {
       this.props.mapReady();
       this.loadCurrentPositionMarker();
+      this.loadTaxiMarkersLayer();
     });
   }
 
@@ -55,7 +64,7 @@ class Map extends React.Component<MapProps, MapState> {
         }
         this.map.addImage('currentPositionMarker', image);
         this.map.addLayer({
-          id: 'symbolsLayer',
+          id: 'currentLocationLayer',
           type: 'symbol',
           layout: {
             'icon-image': 'currentPositionMarker',
@@ -78,38 +87,55 @@ class Map extends React.Component<MapProps, MapState> {
       });
   }
 
-  public componentDidUpdate() {
-    this.updateTaxiLocations();
+  loadTaxiMarkersLayer() {
+    this.map.loadImage(Symbols.taxiMarker, (error: any, image: HTMLElement) => {
+        if (error) {
+          throw error;
+        }
+        this.map.addImage('taxiMarker', image);
+
+        this.map.addSource('taxiSource', {
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features: []
+          }
+        });
+        this.map.addLayer({
+          id: 'taxiLayer',
+          type: 'symbol',
+          layout: {
+            'icon-image': 'taxiMarker',
+            'icon-size': 0.5
+          },
+          source: 'taxiSource'
+        });
+      });
   }
 
   updateTaxiLocations() {
+    const getTaxiSource = this.map.getSource('taxiSource');
     const { taxiLocations } = this.props;
-    // remove existing markers
-    document.querySelectorAll('.map__taxi-marker').forEach(el => el.remove());
-    // add new markers
-    if (taxiLocations) {
-      taxiLocations.drivers.map(driver => {
-        const { longitude, latitude, bearing } = driver.location;
-        const el = document.createElement('div');
-        el.className = 'map__taxi-marker';
-        el.setAttribute('style',
-          `background-image: url(${require('./taxi.svg')});
-           background-size: cover;
-           width: 50px;
-           height: 50px;
-           border-radius: 50%;
-           cursor: pointer;`);
-        new mapboxgl.Marker(el)
-          .setLngLat([longitude, latitude])
-          .addTo(this.map);
-        // rotate taxi according to bearing. apply rotation after rendering as mapboxgl overwrites transform attribute with new values
-        el.style.transform = el.style.transform + `rotate(${bearing}deg)`;
-      });
-    }
-  }
 
-  public componentWillUnmount() {
-    this.map.remove();
+    if (taxiLocations && getTaxiSource) {
+      // map to response to geojson object
+      const res = taxiLocations.drivers.map(driver => {
+        const { longitude, latitude, bearing } = driver.location;
+        return {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [longitude, latitude]
+          }
+        }
+      });
+      const updatedGeoJson = {
+        type: 'FeatureCollection',
+        features: res
+      };
+      // update taxi layer with updated geojson object
+      getTaxiSource.setData(updatedGeoJson);
+    }
   }
 
   public render() {
