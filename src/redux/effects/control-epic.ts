@@ -1,12 +1,13 @@
 import { Epic } from 'redux-observable';
 import { of } from 'rxjs';
-import { switchMap, filter, catchError, debounceTime, mergeMap } from 'rxjs/operators';
+import { switchMap, filter, debounceTime, mergeMap } from 'rxjs/operators';
 import { ActionType, isActionOf } from 'typesafe-actions';
 
 import * as actions from '../actions';
 import { getTaxiList } from '../../shared/services/taxi-service';
 import { RootState } from '../reducers';
 import { TaxiResponse } from '../../shared/models/taxi-response';
+
 type Action = ActionType<typeof actions>;
 
 const mapReadyEpic: Epic<Action, Action, RootState> = (action$, store) =>

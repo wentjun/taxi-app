@@ -30,6 +30,13 @@ export const mapReducer = (state: MapState = initialState, action: Action): MapS
         ready: true
       };
 
+    case getType(actions.updateCurrentLocation):
+      return {
+        ...state,
+        latitude: action.payload.latitude,
+        longtitude: action.payload.longitude
+      };
+
     case getType(actions.updateTaxiLocations):
       return {
         ...state,

@@ -20,7 +20,8 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>, props: OwnProps) => bindActionCreators({
-  mapReady: () => actions.mapReady()
+  mapReady: () => actions.mapReady(),
+  updateCurrentLocation: (longitude: number, latitude: number) => actions.updateCurrentLocation(longitude, latitude)
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Map);
