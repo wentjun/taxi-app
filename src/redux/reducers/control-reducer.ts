@@ -7,11 +7,13 @@ type Action = ActionType<typeof actions>;
 export interface ControlState {
   readonly loading: boolean;
   readonly taxiCount: string;
+  readonly pickupEta: number;
 }
 
 const initialState = {
   loading: false,
-  taxiCount: '5'
+  taxiCount: '5',
+  pickupEta: 0
 };
 
 export const controlReducer = (state: ControlState = initialState, action: Action): ControlState => {
@@ -22,7 +24,13 @@ export const controlReducer = (state: ControlState = initialState, action: Actio
       return {
         ...state,
         taxiCount: action.payload.taxiCount
-      }
+      };
+
+    case getType(actions.getTaxiEta):
+      return {
+        ...state,
+        pickupEta: action.payload.pickupEta
+      };
 
     default:
       return state;

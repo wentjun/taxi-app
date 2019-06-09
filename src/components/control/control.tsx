@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Subject } from 'rxjs';
 
@@ -6,6 +6,7 @@ interface ControlProps {
   setTaxiCount: (taxiCount: string) => {};
   mapReady: () => void;
   taxiCount: string;
+  pickupEta: number;
 }
 
 interface ControlState {
@@ -21,12 +22,56 @@ const ControlWrapper = styled.span`
   }
 `;
 
+interface YourProps {
+  padding?: string;
+  fontSize?: string;
+}
+
 const Span = styled.span`
    text-align: center;
+   padding: ${(props: YourProps) => props.padding || '0'};
+   color: ${props => props.color};
+   font-size: ${(props: YourProps) => props.fontSize};
 `;
 
-const ControlInput = styled.input`
+const InputWrapper = styled.div`
+  padding: 1em;
+`;
 
+const Input = styled.input`
+  width: 100%;
+  text-align: center;
+`;
+
+const SectionSeparator = styled.hr`
+  border: 0;
+  clear: both;
+  display: block;
+  width: 90%;
+  background-color: #2e3131;
+  height: 1px;
+`;
+
+const EtaIndicatorWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+const EtaIndicator = styled.div`
+  border-radius: 50%;
+  width: 5em;
+  height: 5em;
+  padding: 0.5em;
+  border: 0.07em dashed #2e3131;
+  color: #2e3131;
+  text-align: center;
+
+  font-size: 2em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 `;
 
 class Control extends React.Component<ControlProps, ControlState> {
@@ -43,27 +88,41 @@ class Control extends React.Component<ControlProps, ControlState> {
     this.unsubscribe.complete();
   }
 
+  componentDidUpdate() {
+    console.log(this.props.pickupEta);
+  }
+
   public render() {
     return(
       <ControlWrapper>
-        <Span> Number of Taxis to Display: </Span>
-        <input
-          id="taxiRangeSlider"
-          type="range"
-          min="1"
-          max="50"
-          value={this.props.taxiCount}
-          onChange={this.handleInputChange}
-          step="1"
-        />
-        <input
-          id="taxi"
-          type="number"
-          min="1"
-          max="50"
-          value={this.props.taxiCount}
-          onChange={this.handleInputChange}
-        />
+        <Span padding="1em"> Number of Taxis to Display: </Span>
+        <InputWrapper>
+          <Input
+            id="taxiRangeSliderInput"
+            type="range"
+            min="1"
+            max="50"
+            value={this.props.taxiCount}
+            onChange={this.handleInputChange}
+            step="1"
+          />
+          <Input
+            id="taxiTextInput"
+            type="text"
+            min="1"
+            max="50"
+            value={this.props.taxiCount}
+            onChange={this.handleInputChange}
+          />
+        </InputWrapper>
+        <SectionSeparator />
+        <EtaIndicatorWrapper>
+          <Span padding="1em"> Your taxi will arrive in approximately </Span>
+          <EtaIndicator>
+            <Span fontSize="2.5em" color="#049372">{this.props.pickupEta}</Span>
+            <Span>mins</Span>
+          </EtaIndicator>
+        </EtaIndicatorWrapper>
       </ControlWrapper>
     );
   }

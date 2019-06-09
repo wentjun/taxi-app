@@ -1,5 +1,5 @@
 import mapboxgl from 'mapbox-gl';
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import { TaxiResponse } from '../../shared/models/taxi-response';
