@@ -25,7 +25,6 @@ export const mapReducer = (state: MapState = initialState, action: Action): MapS
   switch (action.type) {
 
     case getType(actions.mapReady):
-      console.log(state)
       return {
         ...state,
         ready: true
@@ -35,7 +34,7 @@ export const mapReducer = (state: MapState = initialState, action: Action): MapS
       return {
         ...state,
         taxiLocations: action.payload
-      }
+      };
 
     default:
       return state;

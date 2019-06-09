@@ -1,7 +1,8 @@
-import React, { CSSProperties } from 'react';
 import mapboxgl from 'mapbox-gl';
+import React, { CSSProperties } from 'react';
 
 import { TaxiResponse } from '../../shared/models/taxi-response';
+import { Symbols } from './symbols';
 
 export interface MapProps {
   mapReady: () => void;
@@ -26,7 +27,6 @@ class Map extends React.Component<MapProps, MapState> {
 
   public componentDidMount() {
     this.loadMap();
-    this.loadCurrentPositionMarker();
   }
 
   loadMap() {
@@ -43,17 +43,39 @@ class Map extends React.Component<MapProps, MapState> {
 
     this.map.on('load', () => {
       this.props.mapReady();
+      this.loadCurrentPositionMarker();
     });
   }
 
   loadCurrentPositionMarker() {
     const { longitude, latitude } = this.props;
-    const el = document.createElement('div');
-    el.className = 'marker';
-    el.setAttribute('style', `background-image: url(${require('./marker-editor.svg')});background-size: cover;width: 50px;height: 50px;border-radius: 50%;cursor: pointer;`);
-    new mapboxgl.Marker(el)
-      .setLngLat([longitude, latitude])
-      .addTo(this.map);
+    this.map.loadImage(Symbols.currentPositionMarker, (error: any, image: HTMLElement) => {
+        if (error) {
+          throw error;
+        }
+        this.map.addImage('currentPositionMarker', image);
+        this.map.addLayer({
+          id: 'symbolsLayer',
+          type: 'symbol',
+          layout: {
+            'icon-image': 'currentPositionMarker',
+            'icon-size': 0.4
+          },
+          source: {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: [{
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [longitude, latitude]
+                }
+              }]
+            }
+          }
+        });
+      });
   }
 
   public componentDidUpdate() {
@@ -67,13 +89,21 @@ class Map extends React.Component<MapProps, MapState> {
     // add new markers
     if (taxiLocations) {
       taxiLocations.drivers.map(driver => {
-        const { longitude, latitude } = driver.location;
+        const { longitude, latitude, bearing } = driver.location;
         const el = document.createElement('div');
         el.className = 'map__taxi-marker';
-        el.setAttribute('style', `background-image: url(${require('./taxi-urban-transport.svg')});background-size: cover;width: 50px;height: 50px;border-radius: 50%;cursor: pointer;`);
+        el.setAttribute('style',
+          `background-image: url(${require('./taxi.svg')});
+           background-size: cover;
+           width: 50px;
+           height: 50px;
+           border-radius: 50%;
+           cursor: pointer;`);
         new mapboxgl.Marker(el)
           .setLngLat([longitude, latitude])
           .addTo(this.map);
+        // rotate taxi according to bearing. apply rotation after rendering as mapboxgl overwrites transform attribute with new values
+        el.style.transform = el.style.transform + `rotate(${bearing}deg)`;
       });
     }
   }
