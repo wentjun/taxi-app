@@ -113,7 +113,11 @@ class Map extends React.Component<MapProps, MapState> {
     this.map.on('dblclick', (e: MapMouseEvent)  => {
       const { lng, lat } = e.lngLat
       this.props.updateCurrentLocation(lng, lat);
-      this.map.flyTo({center: [lng, lat]});
+      this.map.flyTo({
+        center: [lng, lat],
+        speed: 0.6,
+        zoom: 14
+      });
       const getCurrentLocationSource = this.map.getSource('currentLocationSource');
       const { latitude, longitude } = this.props;
       if (getCurrentLocationSource && latitude && longitude) {

@@ -8,7 +8,7 @@ type Action = ActionType<typeof actions>;
 export interface MapState {
   readonly ready: boolean;
   readonly latitude: number;
-  readonly longtitude: number;
+  readonly longitude: number;
   readonly zoom: number;
   readonly taxiLocations?: TaxiResponse;
 }
@@ -16,7 +16,7 @@ export interface MapState {
 const initialState = {
   ready: false,
   latitude: 51.5049375,
-  longtitude: -0.0964509,
+  longitude: -0.0964509,
   zoom: 14
 };
 
@@ -34,7 +34,7 @@ export const mapReducer = (state: MapState = initialState, action: Action): MapS
       return {
         ...state,
         latitude: action.payload.latitude,
-        longtitude: action.payload.longitude
+        longitude: action.payload.longitude
       };
 
     case getType(actions.updateTaxiLocations):
