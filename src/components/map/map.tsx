@@ -111,7 +111,7 @@ class Map extends React.Component<MapProps, MapState> {
 
   updateCurrentLocationMarker() {
     this.map.on('dblclick', (e: MapMouseEvent)  => {
-      const { lng, lat } = e.lngLat
+      const { lng, lat } = e.lngLat;
       this.props.updateCurrentLocation(lng, lat);
       this.map.flyTo({
         center: [lng, lat],
@@ -155,7 +155,8 @@ class Map extends React.Component<MapProps, MapState> {
           type: 'symbol',
           layout: {
             'icon-image': 'taxiMarker',
-            'icon-size': 0.5
+            'icon-size': 0.5,
+            'icon-rotate': ['get', 'rotate']
           },
           source: 'taxiSource'
         });
@@ -173,7 +174,11 @@ class Map extends React.Component<MapProps, MapState> {
       const res = taxiLocations.drivers.map(driver => {
         const { longitude, latitude, bearing } = driver.location;
         return {
-          type: 'Feature',
+          type: 'Point',
+          properties: {
+            // set rotation for each marker based on bearing
+            rotate: bearing
+          },
           geometry: {
             type: 'Point',
             coordinates: [longitude, latitude]
