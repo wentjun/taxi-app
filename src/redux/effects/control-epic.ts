@@ -11,7 +11,7 @@ type Action = ActionType<typeof actions>;
 const getTaxiListEpic: Epic<Action, Action, RootState> = (action$, store) =>
   action$.pipe(
     filter(isActionOf(actions.setTaxiCount)),
-    debounceTime(1500),
+    debounceTime(500),
     switchMap(action =>
       getTaxiList(action.payload.taxiCount).pipe(
         map(actions.updateTaxiLocations)

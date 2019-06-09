@@ -17,7 +17,7 @@ const initialState = {
   ready: false,
   latitude: 51.5049375,
   longtitude: -0.0964509,
-  zoom: 15
+  zoom: 13
 };
 
 export const mapReducer = (state: MapState = initialState, action: Action): MapState => {
