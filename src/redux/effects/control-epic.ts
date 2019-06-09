@@ -14,7 +14,13 @@ const mapReadyEpic: Epic<Action, Action, RootState> = (action$, store) =>
     filter(isActionOf(actions.mapReady)),
     switchMap(() =>
       getTaxiList(store.value.control.taxiCount).pipe(
-        mergeMap((response: TaxiResponse) => ([actions.updateTaxiLocations(response), actions.getTaxiEta(response.pickupEta)]))
+        mergeMap((response: TaxiResponse) => {
+          if (response.error) {
+            return of(actions.updateTaxiLocationsError(response.error));
+          } else {
+            return ([actions.updateTaxiLocations(response), actions.getTaxiEta(response.pickupEta)]);
+          }
+        })
     ))
   );
 
@@ -24,7 +30,13 @@ const getTaxiListEpic: Epic<Action, Action, RootState> = (action$, store) =>
     debounceTime(500),
     switchMap(action =>
       getTaxiList(action.payload.taxiCount).pipe(
-        mergeMap((response: TaxiResponse) => ([actions.updateTaxiLocations(response), actions.getTaxiEta(response.pickupEta)]))
+        mergeMap((response: TaxiResponse) => {
+          if (response.error) {
+            return of(actions.updateTaxiLocationsError(response.error));
+          } else {
+            return ([actions.updateTaxiLocations(response), actions.getTaxiEta(response.pickupEta)]);
+          }
+        })
       )
     )
   );

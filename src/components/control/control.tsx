@@ -7,9 +7,15 @@ interface ControlProps {
   mapReady: () => void;
   taxiCount: string;
   pickupEta: number;
+  error?: boolean;
 }
 
 interface ControlState {
+}
+
+interface StyledProps {
+  padding?: string;
+  fontSize?: string;
 }
 
 const ControlWrapper = styled.span`
@@ -22,16 +28,11 @@ const ControlWrapper = styled.span`
   }
 `;
 
-interface YourProps {
-  padding?: string;
-  fontSize?: string;
-}
-
 const Span = styled.span`
    text-align: center;
-   padding: ${(props: YourProps) => props.padding || '0'};
+   padding: ${(props: StyledProps) => props.padding || '0'};
    color: ${props => props.color};
-   font-size: ${(props: YourProps) => props.fontSize};
+   font-size: ${(props: StyledProps) => props.fontSize};
 `;
 
 const InputWrapper = styled.div`
@@ -88,10 +89,6 @@ class Control extends React.Component<ControlProps, ControlState> {
     this.unsubscribe.complete();
   }
 
-  componentDidUpdate() {
-    console.log(this.props.pickupEta);
-  }
-
   public render() {
     return(
       <ControlWrapper>
@@ -114,6 +111,7 @@ class Control extends React.Component<ControlProps, ControlState> {
             value={this.props.taxiCount}
             onChange={this.handleInputChange}
           />
+          {this.props.error && <Span color="#96281b" fontSize="0.6em">Please enable CORS on the server.</Span>}
         </InputWrapper>
         <SectionSeparator />
         <EtaIndicatorWrapper>

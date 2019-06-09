@@ -1,5 +1,5 @@
-import { map, mergeMap } from 'rxjs/operators';
-import { from, Observable } from 'rxjs';
+import { map, mergeMap, catchError } from 'rxjs/operators';
+import { from, Observable, of } from 'rxjs';
 import { TaxiResponse } from '../models/taxi-response';
 
 const getTaxiList = (taxiCount: string) => {
@@ -13,7 +13,8 @@ const getTaxiList = (taxiCount: string) => {
             driverId: driver.driver_id,
             location: driver.location
           }))
-        }))
+        })),
+      catchError(error => of({ error: true, message: error.message }))
     ) as Observable<TaxiResponse>;
 };
 
