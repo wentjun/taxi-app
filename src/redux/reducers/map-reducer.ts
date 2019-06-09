@@ -24,7 +24,8 @@ export const mapReducer = (state: MapState = initialState, action: Action): MapS
 
   switch (action.type) {
 
-    case getType(actions.mapReadyAction):
+    case getType(actions.mapReady):
+      console.log(state)
       return {
         ...state,
         ready: true

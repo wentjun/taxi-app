@@ -20,7 +20,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>, props: OwnProps) => bindActionCreators({
-  mapReady: () => actions.mapReadyAction()
+  mapReady: () => actions.mapReady()
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Map);

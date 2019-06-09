@@ -12,9 +12,6 @@ export interface MapProps {
 }
 
 interface MapState {
-  lat: number;
-  lng: number;
-  zoom: number;
 }
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoid2VudGp1biIsImEiOiJjandmODc5cngwcDJjNDNwYjhtOXZqejVtIn0.1l6XNJgy4pkY7TWEV58pVQ';
@@ -28,7 +25,6 @@ class Map extends React.Component<MapProps, MapState> {
   }
 
   public componentDidMount() {
-    this.props.mapReady();
     this.loadMap();
     this.loadCurrentPositionMarker();
   }
@@ -44,13 +40,9 @@ class Map extends React.Component<MapProps, MapState> {
 
     // Add zoom and rotation controls to the map.
     this.map.addControl(new mapboxgl.NavigationControl());
-    this.map.on('move', () => {
-      const { lat, lng } = this.map.getCenter();
-      this.setState({
-        lat: Number(lat.toFixed(4)),
-        lng: Number(lng.toFixed(4)),
-        zoom: Number(this.map.getZoom().toFixed(2))
-      });
+
+    this.map.on('load', () => {
+      this.props.mapReady();
     });
   }
 

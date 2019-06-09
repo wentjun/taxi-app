@@ -60,6 +60,7 @@ class Control extends React.Component<ControlProps, ControlState> {
 
   private handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     const taxiAmount: string = event.target.value;
+    console.log(event)
     this.props.setTaxiCount(taxiAmount);
   }
 }
