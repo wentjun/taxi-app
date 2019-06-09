@@ -14,13 +14,14 @@ interface OwnProps {
 const mapStateToProps = (state: RootState) => ({
   loading: !state.map.ready,
   latitude: state.map.latitude,
-  longitude: state.map.longtitude,
+  longitude: state.map.longitude,
   zoom: state.map.zoom,
   taxiLocations: state.map.taxiLocations
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>, props: OwnProps) => bindActionCreators({
-  mapReady: () => actions.mapReady()
+  mapReady: () => actions.mapReady(),
+  updateCurrentLocation: (longitude: number, latitude: number) => actions.updateCurrentLocation(longitude, latitude)
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Map);
