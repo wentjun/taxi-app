@@ -1,4 +1,5 @@
 import React, { CSSProperties } from 'react';
+import styled from 'styled-components';
 
 import Control from './control/control-container';
 import Map from './map/map-container';
@@ -7,17 +8,22 @@ export interface AppProps {
   loading?: boolean;
 }
 
+const AppWrapper = styled.div`
+  display: flex;
+  flex-flow: row wrap;
+
+  @media all and (max-width: 1024px) {
+    flex-direction: column-reverse;
+  }
+`;
+
 class App extends React.Component<AppProps, {}> {
   render() {
-    const style: CSSProperties = {
-      display: 'flex',
-      flexFlow: 'row wrap'
-    };
     return (
-      <div style={style}>
+      <AppWrapper>
         <Control />
         <Map />
-      </div>
+      </AppWrapper>
     );
   }
 }

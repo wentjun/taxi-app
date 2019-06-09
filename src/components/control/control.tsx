@@ -1,4 +1,5 @@
 import React, { CSSProperties } from 'react';
+import styled from 'styled-components';
 import { Subject } from 'rxjs';
 
 interface ControlProps {
@@ -9,6 +10,24 @@ interface ControlProps {
 
 interface ControlState {
 }
+
+const ControlWrapper = styled.span`
+  width: 25vw;
+  display: flex;
+  flex-flow: column wrap;
+
+  @media all and (max-width: 1024px) {
+    width: 100vw;
+  }
+`;
+
+const Span = styled.span`
+   text-align: center;
+`;
+
+const ControlInput = styled.input`
+
+`;
 
 class Control extends React.Component<ControlProps, ControlState> {
   private unsubscribe: Subject<void> = new Subject();
@@ -25,18 +44,9 @@ class Control extends React.Component<ControlProps, ControlState> {
   }
 
   public render() {
-    const wrapperStyle: CSSProperties = {
-      width: '25vw',
-      height: '100vh',
-      display: 'flex',
-      flexFlow: 'column wrap'
-    };
-    const labelStyle: CSSProperties = {
-      textAlign: 'center'
-    };
     return(
-      <div style={wrapperStyle}>
-        <span style={labelStyle}> Number of Taxis to Display: </span>
+      <ControlWrapper>
+        <Span> Number of Taxis to Display: </Span>
         <input
           id="taxiRangeSlider"
           type="range"
@@ -54,7 +64,7 @@ class Control extends React.Component<ControlProps, ControlState> {
           value={this.props.taxiCount}
           onChange={this.handleInputChange}
         />
-      </div>
+      </ControlWrapper>
     );
   }
 
