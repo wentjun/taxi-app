@@ -47,12 +47,11 @@ const getTaxiListEpic: Epic<Action, Action, RootState> = (action$, store) =>
     filter(isActionOf(actions.setTaxiCount)),
     debounceTime(500),
     switchMap(action => {
-      console.log(action);
       const regex = /^\d+$/;
+      // to check if the input is valid (whole numbers, 1 to 50)
       if (regex.test(action.payload.taxiCount) && Number(action.payload.taxiCount) > 0 && Number(action.payload.taxiCount) < 51) {
         return getTaxiList(store.value.map.longitude, store.value.map.latitude, action.payload.taxiCount).pipe(
           mergeMap((response: TaxiResponse) => {
-            console.log(response)
             if (response.errorMessage) {
               return of(actions.updateTaxiLocationsError(response.errorMessage));
             } else {

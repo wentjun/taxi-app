@@ -43,15 +43,15 @@ class Map extends React.Component<MapProps, MapState> {
     super(props);
   }
 
-  public componentDidMount() {
+  componentDidMount() {
     this.loadMap();
   }
 
-  public componentDidUpdate() {
+  componentDidUpdate() {
     this.updateTaxiLocations();
   }
 
-  public componentWillUnmount() {
+  componentWillUnmount() {
     this.map.remove();
   }
 
@@ -194,7 +194,7 @@ class Map extends React.Component<MapProps, MapState> {
     }
   }
 
-  public render() {
+  render() {
     return(
       <MapWrapper>
         <MapContainer ref={el => this.mapContainer = el} />

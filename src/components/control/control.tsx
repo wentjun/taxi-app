@@ -84,12 +84,17 @@ class Control extends React.Component<ControlProps, ControlState> {
     this.handleInputChange = this.handleInputChange.bind(this);
   }
 
-  public componentWillUnmount() {
+  componentWillUnmount() {
     this.unsubscribe.next();
     this.unsubscribe.complete();
   }
 
-  public render() {
+  handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const taxiAmount: string = event.target.value;
+    this.props.setTaxiCount(taxiAmount);
+  }
+
+  render() {
     return(
       <ControlWrapper>
         <Span padding="1em"> Number of Taxis to Display: </Span>
@@ -125,13 +130,6 @@ class Control extends React.Component<ControlProps, ControlState> {
     );
   }
 
-  private handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const taxiAmount: string = event.target.value;
-    const regex = /^\d+$/;
-    //if (regex.test(taxiAmount)) {
-      this.props.setTaxiCount(taxiAmount);
-    //}
-  }
 }
 
 export default Control;
