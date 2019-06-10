@@ -16,8 +16,8 @@ const mapReadyEpic: Epic<Action, Action, RootState> = (action$, store) =>
     switchMap(() =>
       getTaxiList(store.value.map.longitude, store.value.map.latitude, store.value.control.taxiCount).pipe(
         mergeMap((response: TaxiResponse) => {
-          if (response.error) {
-            return of(actions.updateTaxiLocationsError(response.error));
+          if (response.errorMessage) {
+            return of(actions.updateTaxiLocationsError(response.errorMessage));
           } else {
             return ([actions.updateTaxiLocations(response), actions.getTaxiEta(response.pickupEta)]);
           }
@@ -32,8 +32,8 @@ const updateCurrentLocationEpic: Epic<Action, Action, RootState> = (action$, sto
     switchMap(action =>
       getTaxiList(action.payload.longitude, action.payload.latitude, store.value.control.taxiCount).pipe(
         mergeMap((response: TaxiResponse) => {
-          if (response.error) {
-            return of(actions.updateTaxiLocationsError(response.error));
+          if (response.errorMessage) {
+            return of(actions.updateTaxiLocationsError(response.errorMessage));
           } else {
             return ([actions.updateTaxiLocations(response), actions.getTaxiEta(response.pickupEta)]);
           }
@@ -46,17 +46,25 @@ const getTaxiListEpic: Epic<Action, Action, RootState> = (action$, store) =>
   action$.pipe(
     filter(isActionOf(actions.setTaxiCount)),
     debounceTime(500),
-    switchMap(action =>
-      getTaxiList(store.value.map.longitude, store.value.map.latitude, action.payload.taxiCount).pipe(
-        mergeMap((response: TaxiResponse) => {
-          if (response.error) {
-            return of(actions.updateTaxiLocationsError(response.error));
-          } else {
-            return ([actions.updateTaxiLocations(response), actions.getTaxiEta(response.pickupEta)]);
-          }
-        })
-      )
-    )
+    switchMap(action => {
+      console.log(action);
+      const regex = /^\d+$/;
+      if (regex.test(action.payload.taxiCount) && Number(action.payload.taxiCount) > 0 && Number(action.payload.taxiCount) < 51) {
+        return getTaxiList(store.value.map.longitude, store.value.map.latitude, action.payload.taxiCount).pipe(
+          mergeMap((response: TaxiResponse) => {
+            console.log(response)
+            if (response.errorMessage) {
+              return of(actions.updateTaxiLocationsError(response.errorMessage));
+            } else {
+              return ([actions.updateTaxiLocations(response), actions.getTaxiEta(response.pickupEta)]);
+            }
+          })
+        )
+      } else {
+        return of(actions.updateTaxiLocationsError('Please enter a valid whole number, from 1 to 50'));
+      }
+
+    })
   );
 
 export default [

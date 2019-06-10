@@ -14,7 +14,7 @@ const getTaxiList = (longitude: number, latitude: number, taxiCount: string) => 
             location: driver.location
           }))
         })),
-      catchError(error => of({ error: true, message: error.message }))
+      catchError(() => of({ error: true, errorMessage: 'Please enable CORS on the server' }))
     ) as Observable<TaxiResponse>;
 };
 

@@ -7,7 +7,7 @@ interface ControlProps {
   mapReady: () => void;
   taxiCount: string;
   pickupEta: number;
-  error?: boolean;
+  errorMessage?: string;
 }
 
 interface ControlState {
@@ -111,7 +111,7 @@ class Control extends React.Component<ControlProps, ControlState> {
             value={this.props.taxiCount}
             onChange={this.handleInputChange}
           />
-          {this.props.error && <Span color="#96281b" fontSize="0.6em">Please enable CORS on the server.</Span>}
+          {this.props.errorMessage && <Span color="#96281b" fontSize="0.6em">{this.props.errorMessage}</Span>}
         </InputWrapper>
         <SectionSeparator />
         <EtaIndicatorWrapper>
@@ -127,7 +127,10 @@ class Control extends React.Component<ControlProps, ControlState> {
 
   private handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     const taxiAmount: string = event.target.value;
-    this.props.setTaxiCount(taxiAmount);
+    const regex = /^\d+$/;
+    //if (regex.test(taxiAmount)) {
+      this.props.setTaxiCount(taxiAmount);
+    //}
   }
 }
 
