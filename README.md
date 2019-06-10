@@ -19,15 +19,15 @@
     ```
 4. Due to CORS restrictions from the API endpoint, you may need to install an additional plugin to ensure that the application can run smoothly on localhost. 
 
- If you are running the application on Chrome, simply download a plugin such as [this](https://chrome.google.com/webstore/detail/moesif-orign-cors-changer/digfbfaphojjndkpccljibejjbppifbc/related), which will overwrite CORS headers and perform cross-domain requests.
+     If you are running the application on Chrome, simply download a plugin such as [this](https://chrome.google.com/webstore/detail/moesif-orign-cors-changer/digfbfaphojjndkpccljibejjbppifbc/related), which will overwrite CORS headers and perform cross-domain requests.
 
- If you are running the safari on Safari, enable Developer mode by going to 'Preferences', followed by 'Advanced'. On the 'Develop' section on the top menu, check 'Disable Cross-Origin Restrictions'.
+     If you are running the safari on Safari, enable Developer mode by going to 'Preferences', followed by 'Advanced'. On the 'Develop' section on the top menu, check 'Disable Cross-Origin Restrictions'.
 
 ----
 
 ## Current Features
 
-1) Selecting the number of drivers to be rendered on the map. The input can be changed via the range slider, or input text box.
+1) Selecting the number of drivers to be rendered on the map. The input can be changed via the range slider, or input text box. Do take note of the zoom levels will result in 'clustering', or 'declustering' of the markers which represent the drivers.
 
 2) Updating of the user's current location by double clicking on the map.
 
