@@ -7,7 +7,7 @@ interface ControlProps {
   mapReady: () => void;
   taxiCount: string;
   pickupEta: number;
-  error?: boolean;
+  errorMessage?: string;
 }
 
 interface ControlState {
@@ -84,12 +84,17 @@ class Control extends React.Component<ControlProps, ControlState> {
     this.handleInputChange = this.handleInputChange.bind(this);
   }
 
-  public componentWillUnmount() {
+  componentWillUnmount() {
     this.unsubscribe.next();
     this.unsubscribe.complete();
   }
 
-  public render() {
+  handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const taxiAmount: string = event.target.value;
+    this.props.setTaxiCount(taxiAmount);
+  }
+
+  render() {
     return(
       <ControlWrapper>
         <Span padding="1em"> Number of Taxis to Display: </Span>
@@ -111,7 +116,7 @@ class Control extends React.Component<ControlProps, ControlState> {
             value={this.props.taxiCount}
             onChange={this.handleInputChange}
           />
-          {this.props.error && <Span color="#96281b" fontSize="0.6em">Please enable CORS on the server.</Span>}
+          {this.props.errorMessage && <Span color="#96281b" fontSize="0.6em">{this.props.errorMessage}</Span>}
         </InputWrapper>
         <SectionSeparator />
         <EtaIndicatorWrapper>
@@ -125,10 +130,6 @@ class Control extends React.Component<ControlProps, ControlState> {
     );
   }
 
-  private handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const taxiAmount: string = event.target.value;
-    this.props.setTaxiCount(taxiAmount);
-  }
 }
 
 export default Control;

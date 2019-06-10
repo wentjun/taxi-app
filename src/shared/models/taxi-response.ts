@@ -1,7 +1,7 @@
 export interface TaxiResponse {
   drivers: Driver[];
   pickupEta: number;
-  error?: boolean;
+  errorMessage?: string;
 }
 
 interface Driver {

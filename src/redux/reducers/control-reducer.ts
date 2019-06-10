@@ -8,7 +8,7 @@ export interface ControlState {
   readonly loading: boolean;
   readonly taxiCount: string;
   readonly pickupEta: number;
-  readonly error?: boolean;
+  readonly errorMessage?: string;
 }
 
 const initialState = {
@@ -30,13 +30,14 @@ export const controlReducer = (state: ControlState = initialState, action: Actio
     case getType(actions.getTaxiEta):
       return {
         ...state,
+        errorMessage: undefined,
         pickupEta: action.payload.pickupEta
       };
 
       case getType(actions.updateTaxiLocationsError):
         return {
           ...state,
-          error: action.payload
+          errorMessage: action.payload
         };
 
     default:
